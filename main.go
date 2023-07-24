@@ -6,6 +6,7 @@ import (
 	"github.com/afdalabdallah/backend-web/repository/dosen_repository/dosen_pg"
 	"github.com/afdalabdallah/backend-web/repository/matkul_repository/matkul_pg"
 	"github.com/afdalabdallah/backend-web/repository/rumpun_repository/rumpun_pg"
+	"github.com/afdalabdallah/backend-web/repository/perkuliahan_repository/perkuliahan_pg"
 	"github.com/afdalabdallah/backend-web/services"
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +29,10 @@ func main() {
 	dosenRepo := dosen_pg.NewPGDosenRepository(initializers.DB)
 	dosenService := services.NewDosenService(dosenRepo, rumpunRepo)
 	dosenController := controllers.NewDosenController(dosenService)
+
+	perkuliahanRepo := perkuliahan_pg.NewPGPerkuliahanRepository(initializers.DB)
+	perkuliahanService := services.NewPerkuliahanService(perkuliahanRepo)
+	perkuliahanController := controllers.NewPerkuliahanController(perkuliahanService)
 
 	route := gin.Default()
 	// c := cors.New(cors.Options{
@@ -64,6 +69,15 @@ func main() {
 		dosenRoute.GET("/:dosenID", dosenController.GetDosenById)
 		dosenRoute.PUT("/:dosenID", dosenController.UpdateDosen)
 		dosenRoute.DELETE("/:dosenID", dosenController.DeleteDosen)
+	}
+
+	perkuliahanRoute := route.Group("/perkuliahan")
+	{
+		perkuliahanRoute.POST("/", perkuliahanController.CreatePerkuliahan)
+		perkuliahanRoute.GET("/", perkuliahanController.GetAllPerkuliahan)
+		perkuliahanRoute.GET("/:perkuliahanID", perkuliahanController.GetPerkuliahanById)
+		perkuliahanRoute.PUT("/:perkuliahanID", perkuliahanController.UpdatePerkuliahan)
+		perkuliahanRoute.DELETE("/:perkuliahanID", perkuliahanController.DeletePerkuliahan)
 	}
 
 	// Enable CORS with permissive options (allowing all origins, methods, and headers)
