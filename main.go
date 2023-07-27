@@ -30,13 +30,6 @@ func main() {
 	dosenController := controllers.NewDosenController(dosenService)
 
 	route := gin.Default()
-	// c := cors.New(cors.Options{
-	// 	AllowedOrigins:   []string{"http://localhost:3000"}, // Replace with your frontend domain or address
-	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	// 	AllowedHeaders:   []string{"Content-Type", "Authorization"}, // Add any other allowed headers
-	// 	AllowCredentials: true,                                      // Set to true if you need to include credentials (cookies, HTTP authentication)
-	// })
-	// handler := c.Handler(route)
 
 	route.Use(CORSMiddleware())
 	rumpunRoute := route.Group("/rumpun")
@@ -66,47 +59,20 @@ func main() {
 		dosenRoute.DELETE("/:dosenID", dosenController.DeleteDosen)
 	}
 
-	// Enable CORS with permissive options (allowing all origins, methods, and headers)
-
-	// Wrap your mux with the CORS middleware
-
-	// http.ListenAndServe(":5000", handler)
-	// http.ListenAndServe(":5000", handler)
-	// if err != nil {
-	// 	panic(err)
-	// }
 	route.Run()
 }
-
-// func CORSMiddleware() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-
-// 		if c.Request.Method == "OPTIONS" {
-// 			c.AbortWithStatus(204)
-// 			return
-// 		}
-
-// 		c.Next()
-// 	}
-// }
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Headers", "*")
-		/*
-		   c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		   c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		   c.Writer.Header().Set("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
-		   c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH")
-		*/
+		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "authorization, origin, content-type, accept")
+		c.Header("Allow", "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS")
+		c.Header("Content-Type", "application/json")
 
 		if c.Request.Method == "OPTIONS" {
+			print("masuk ke opstion")
 			c.AbortWithStatus(204)
 			return
 		}
