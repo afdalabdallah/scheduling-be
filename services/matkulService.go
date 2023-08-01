@@ -34,6 +34,7 @@ func (p *matkulService) CreateMatkul(matkulData models.Matkul) (*models.Matkul, 
 		Tipe:     matkulData.Tipe,
 		Semester: matkulData.Semester,
 		RumpunID: matkulData.RumpunID,
+		SKS:      matkulData.SKS,
 	}
 	matkulCreated, err := p.matkulRepo.CreateMatkul(matkul)
 	if err != nil {
@@ -45,7 +46,6 @@ func (p *matkulService) CreateMatkul(matkulData models.Matkul) (*models.Matkul, 
 
 func (p *matkulService) GetAllMatkul() (*[]models.Matkul, errs.Errs) {
 	matkuls, err := p.matkulRepo.GetAllMatkul()
-
 	if err != nil {
 		return nil, err
 	}

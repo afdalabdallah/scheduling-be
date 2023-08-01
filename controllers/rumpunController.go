@@ -57,7 +57,7 @@ func (p *rumpunController) GetAllRumpun(c *gin.Context) {
 
 func (p *rumpunController) DeleteRumpun(c *gin.Context) {
 	rumpunID, err := strconv.Atoi(c.Param("rumpunID"))
-
+	// println(rumpunID)
 	if err != nil {
 		paramErr := errs.NewBadRequestError(err.Error())
 		c.JSON(paramErr.Status(), paramErr)

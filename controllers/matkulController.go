@@ -35,6 +35,7 @@ func (p *matkulController) CreateMatkul(c *gin.Context) {
 		c.JSON(bindErr.Status(), bindErr)
 		return
 	}
+	println(matkulData.RumpunID)
 
 	response, err := p.matkulService.CreateMatkul(matkulData)
 	if err != nil {
