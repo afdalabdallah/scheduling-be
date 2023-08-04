@@ -1,11 +1,9 @@
-package models
+package dto
 
 import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-
-	"gorm.io/gorm"
 )
 
 type Preferensi struct {
@@ -28,10 +26,10 @@ func (p Preferensi) Value() (driver.Value, error) {
 	return json.Marshal(p)
 }
 
-type Dosen struct {
-	gorm.Model
+type DosenResponse struct {
+	ID         int        `json:"id"`
 	Nama       string     `json:"nama"`
 	KodeDosen  string     `json:"kode_dosen"`
 	Preferensi Preferensi `json:"preferensi"`
-	RumpunID   int        `json:"rumpun_id"`
+	Rumpun     string     `json:"rumpun_id"`
 }

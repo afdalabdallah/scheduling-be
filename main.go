@@ -31,7 +31,7 @@ func main() {
 	dosenController := controllers.NewDosenController(dosenService)
 
 	perkuliahanRepo := perkuliahan_pg.NewPGPerkuliahanRepository(initializers.DB)
-	perkuliahanService := services.NewPerkuliahanService(perkuliahanRepo)
+	perkuliahanService := services.NewPerkuliahanService(rumpunRepo, matkulRepo, dosenRepo, perkuliahanRepo)
 	perkuliahanController := controllers.NewPerkuliahanController(perkuliahanService)
 
 	route := gin.Default()
