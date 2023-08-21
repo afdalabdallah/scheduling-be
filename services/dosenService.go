@@ -15,7 +15,7 @@ type dosenService struct {
 
 type DosenService interface {
 	CreateDosen(dosenData models.Dosen) (*models.Dosen, errs.Errs)
-	GetAllDosen() (*dto.DosenResponse, errs.Errs)
+	GetAllDosen() (*[]dto.DosenResponse, errs.Errs)
 	DeleteDosen(dosenID int) (string, errs.Errs)
 	UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs)
 	GetDosenById(dosenID int) (*dto.DosenResponse, errs.Errs)
@@ -48,29 +48,30 @@ func (p *dosenService) CreateDosen(dosenData models.Dosen) (*models.Dosen, errs.
 	return dosenCreated, nil
 }
 
-func (p *dosenService) GetAllDosen() (*dto.DosenResponse, errs.Errs) {
+func (p *dosenService) GetAllDosen() (*[]dto.DosenResponse, errs.Errs) {
 	dosens, err := p.dosenRepo.GetAllDosen()
 
 	if err != nil {
 		return nil, err
 	}
 
-	var dosenResponse dto.DosenResponse
+	var dosenResponseArr []dto.DosenResponse
 	for _, dosen := range dosens {
 		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosen.RumpunID)
 		if errRumpun != nil {
 			return nil, errRumpun
 		}
-		dosenResponse = dto.DosenResponse{
+		dosenResponse := dto.DosenResponse{
 			ID:         int(dosen.ID),
 			Nama:       dosen.Nama,
 			KodeDosen:  dosen.KodeDosen,
 			Preferensi: dto.Preferensi(dosen.Preferensi),
 			Rumpun:     rumpun.KodeRMK,
 		}
+		dosenResponseArr = append(dosenResponseArr, dosenResponse)
 	}
 
-	return &dosenResponse, nil
+	return &dosenResponseArr, nil
 }
 
 func (p *dosenService) DeleteDosen(dosenID int) (string, errs.Errs) {

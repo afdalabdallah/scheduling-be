@@ -10,4 +10,5 @@ type PerkuliahanResponse struct {
 	Rumpun         string `json:"rumpun"`
 	DosenNama      string `json:"nama_dosen"`
 	KodeDosen      string `json:"kode_dosen"`
+	Semester       int    `json:"semester"`
 }

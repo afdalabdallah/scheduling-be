@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/afdalabdallah/backend-web/dto"
 	"github.com/afdalabdallah/backend-web/models"
 	"github.com/afdalabdallah/backend-web/pkg/errs"
 	"github.com/afdalabdallah/backend-web/repository/rumpun_repository"
@@ -12,7 +13,7 @@ type rumpunService struct {
 
 type RumpunService interface {
 	CreateRumpun(rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
-	GetAllRumpun() (*[]models.Rumpun, errs.Errs)
+	GetAllRumpun() (*[]dto.RumpunResponse, errs.Errs)
 	DeleteRumpun(rumpunID int) (string, errs.Errs)
 	UpdateRumpun(rumpunID int, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
 	GetRumpunById(rumpunID int) (*models.Rumpun, errs.Errs)
@@ -37,14 +38,24 @@ func (p *rumpunService) CreateRumpun(rumpunData models.Rumpun) (*models.Rumpun, 
 	return rumpunCreated, nil
 }
 
-func (p *rumpunService) GetAllRumpun() (*[]models.Rumpun, errs.Errs) {
+func (p *rumpunService) GetAllRumpun() (*[]dto.RumpunResponse, errs.Errs) {
 	rumpuns, err := p.rumpunRepo.GetAllRumpun()
+
+	var rumpunResponse []dto.RumpunResponse
+	for _, rumpun := range rumpuns {
+		rumpunRes := dto.RumpunResponse{
+			ID:      int(rumpun.ID),
+			Nama:    rumpun.Nama,
+			KodeRMK: rumpun.KodeRMK,
+		}
+		rumpunResponse = append(rumpunResponse, rumpunRes)
+	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &rumpuns, nil
+	return &rumpunResponse, nil
 }
 
 func (p *rumpunService) DeleteRumpun(rumpunID int) (string, errs.Errs) {

@@ -19,7 +19,7 @@ type perkuliahanService struct {
 
 type PerkuliahanService interface {
 	CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
-	GetAllPerkuliahan() (*dto.PerkuliahanResponse, errs.Errs)
+	GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, errs.Errs)
 	DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs)
 	UpdatePerkuliahan(PerkuliahanID int, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
 	GetPerkuliahanById(PerkuliahanID int) (*models.Perkuliahan, errs.Errs)
@@ -35,12 +35,21 @@ func NewPerkuliahanService(rumpunRepo rumpun_repository.RumpunRepository, matkul
 }
 
 func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(PerkuliahanData.MataKuliahId)
+	if errMatkul != nil {
+		return nil, errMatkul
+	}
+	dosen, errDosen := p.dosenRepo.GetDosenById(PerkuliahanData.DosenId)
+	if errDosen != nil {
+		return nil, errDosen
+	}
+
 	Perkuliahan := models.Perkuliahan{
 		Sesi:         PerkuliahanData.Sesi,
 		Kelas:        PerkuliahanData.Kelas,
 		Ruangan:      PerkuliahanData.Ruangan,
-		MataKuliahId: PerkuliahanData.MataKuliahId,
-		DosenId:      PerkuliahanData.DosenId,
+		MataKuliahId: int(matkul.ID),
+		DosenId:      int(dosen.ID),
 	}
 	PerkuliahanCreated, err := p.perkuliahanRepo.CreatePerkuliahan(Perkuliahan)
 	if err != nil {
@@ -50,10 +59,10 @@ func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliaha
 	return PerkuliahanCreated, nil
 }
 
-func (p *perkuliahanService) GetAllPerkuliahan() (*dto.PerkuliahanResponse, errs.Errs) {
+func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, errs.Errs) {
 	perkuliahans, err := p.perkuliahanRepo.GetAllPerkuliahan()
 
-	var perkuliahanRespons dto.PerkuliahanResponse
+	var perkuliahanRespons []dto.PerkuliahanResponse
 	for _, perkuliahan := range perkuliahans {
 		matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahan.MataKuliahId)
 		if errMatkul != nil {
@@ -68,7 +77,8 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*dto.PerkuliahanResponse, errs
 			return nil, errRumpun
 		}
 
-		perkuliahanRespons = dto.PerkuliahanResponse{
+		perkuliahanResponsData := dto.PerkuliahanResponse{
+			ID:             int(perkuliahan.ID),
 			Sesi:           perkuliahan.Sesi,
 			Kelas:          perkuliahan.Kelas,
 			Ruangan:        perkuliahan.Ruangan,
@@ -77,7 +87,9 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*dto.PerkuliahanResponse, errs
 			DosenNama:      dosen.Nama,
 			Rumpun:         rumpun.KodeRMK,
 			KodeDosen:      dosen.KodeDosen,
+			Semester:       matkul.Semester,
 		}
+		perkuliahanRespons = append(perkuliahanRespons, perkuliahanResponsData)
 	}
 
 	if err != nil {

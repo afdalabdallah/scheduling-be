@@ -15,7 +15,7 @@ type matkulService struct {
 
 type MatkulService interface {
 	CreateMatkul(matkulData models.Matkul) (*models.Matkul, errs.Errs)
-	GetAllMatkul() (*dto.MatkulResponse, errs.Errs)
+	GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs)
 	DeleteMatkul(matkulID int) (string, errs.Errs)
 	UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs)
 	GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.Errs)
@@ -50,20 +50,21 @@ func (p *matkulService) CreateMatkul(matkulData models.Matkul) (*models.Matkul, 
 	return matkulCreated, nil
 }
 
-func (p *matkulService) GetAllMatkul() (*dto.MatkulResponse, errs.Errs) {
+func (p *matkulService) GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs) {
 	matkuls, err := p.matkulRepo.GetAllMatkul()
 	if err != nil {
 		return nil, err
 	}
 
-	var matkulRespons dto.MatkulResponse
+	var matkulRespons []dto.MatkulResponse
 	for _, matkul := range matkuls {
 		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkul.RumpunID)
 		if errRumpun != nil {
 			return nil, errRumpun
 		}
 
-		matkulRespons = dto.MatkulResponse{
+		matkulResponsData := dto.MatkulResponse{
+			ID:       int(matkul.ID),
 			Nama:     matkul.Nama,
 			KodeMK:   matkul.KodeMK,
 			Tipe:     matkul.Tipe,
@@ -71,6 +72,7 @@ func (p *matkulService) GetAllMatkul() (*dto.MatkulResponse, errs.Errs) {
 			Rumpun:   rumpun.KodeRMK,
 			SKS:      matkul.SKS,
 		}
+		matkulRespons = append(matkulRespons, matkulResponsData)
 	}
 
 	return &matkulRespons, nil
@@ -120,6 +122,7 @@ func (p *matkulService) GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.E
 	}
 
 	matkulRespons := dto.MatkulResponse{
+		ID:       int(matkulData.ID),
 		Nama:     matkulData.Nama,
 		KodeMK:   matkulData.KodeMK,
 		Tipe:     matkulData.Tipe,

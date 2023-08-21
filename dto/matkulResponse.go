@@ -1,7 +1,7 @@
 package dto
 
 type MatkulResponse struct {
-	ID       string `json:"id"`
+	ID       int    `json:"id"`
 	Nama     string `json:"nama"`
 	KodeMK   string `json:"kode_mk"`
 	SKS      int    `json:"sks"`
