@@ -14,7 +14,7 @@ type dosenService struct {
 }
 
 type DosenService interface {
-	CreateDosen(dosenData models.Dosen) (*models.Dosen, errs.Errs)
+	CreateDosen(dosenData []models.Dosen) (*[]models.Dosen, errs.Errs)
 	GetAllDosen() (*[]dto.DosenResponse, errs.Errs)
 	DeleteDosen(dosenID int) (string, errs.Errs)
 	UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs)
@@ -28,24 +28,29 @@ func NewDosenService(dosenRepo dosen_repository.DosenRepository, rumpunRepo rump
 	}
 }
 
-func (p *dosenService) CreateDosen(dosenData models.Dosen) (*models.Dosen, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosenData.RumpunID)
-	if errRumpun != nil || rumpun.ID == 0 {
-		return nil, errRumpun
+func (p *dosenService) CreateDosen(dosenData []models.Dosen) (*[]models.Dosen, errs.Errs) {
+	var dosenCreateResponse []models.Dosen
+	for _, data := range dosenData {
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
+		if errRumpun != nil || rumpun.ID == 0 {
+			return nil, errRumpun
+		}
+
+		dosen := models.Dosen{
+			Nama:       data.Nama,
+			KodeDosen:  data.KodeDosen,
+			Preferensi: data.Preferensi,
+			RumpunID:   data.RumpunID,
+			Load:       0,
+		}
+		dosenCreated, err := p.dosenRepo.CreateDosen(dosen)
+		if err != nil {
+			return nil, err
+		}
+		dosenCreateResponse = append(dosenCreateResponse, *dosenCreated)
 	}
 
-	dosen := models.Dosen{
-		Nama:       dosenData.Nama,
-		KodeDosen:  dosenData.KodeDosen,
-		Preferensi: dosenData.Preferensi,
-		RumpunID:   dosenData.RumpunID,
-	}
-	dosenCreated, err := p.dosenRepo.CreateDosen(dosen)
-	if err != nil {
-		return nil, err
-	}
-
-	return dosenCreated, nil
+	return &dosenCreateResponse, nil
 }
 
 func (p *dosenService) GetAllDosen() (*[]dto.DosenResponse, errs.Errs) {
@@ -67,6 +72,7 @@ func (p *dosenService) GetAllDosen() (*[]dto.DosenResponse, errs.Errs) {
 			KodeDosen:  dosen.KodeDosen,
 			Preferensi: dto.Preferensi(dosen.Preferensi),
 			Rumpun:     rumpun.KodeRMK,
+			Load:       dosen.Load,
 		}
 		dosenResponseArr = append(dosenResponseArr, dosenResponse)
 	}

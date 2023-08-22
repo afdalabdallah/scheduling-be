@@ -28,14 +28,13 @@ func NewMatkulController(matkulService services.MatkulService) MatkulController 
 }
 
 func (p *matkulController) CreateMatkul(c *gin.Context) {
-	var matkulData models.Matkul
+	var matkulData []models.Matkul
 	if err := c.ShouldBindJSON(&matkulData); err != nil {
 		bindErr := errs.NewBadRequestError(err.Error())
 
 		c.JSON(bindErr.Status(), bindErr)
 		return
 	}
-	println(matkulData.RumpunID)
 
 	response, err := p.matkulService.CreateMatkul(matkulData)
 	if err != nil {

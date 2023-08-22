@@ -34,4 +34,5 @@ type Dosen struct {
 	KodeDosen  string     `json:"kode_dosen"`
 	Preferensi Preferensi `json:"preferensi"`
 	RumpunID   int        `json:"rumpun_id"`
+	Load       int        `json:"load"`
 }

@@ -68,6 +68,7 @@ func (p *dosenRepository) UpdateDosen(dosenID int, dosenData models.Dosen) (*mod
 	dosenUpdate.KodeDosen = dosenData.KodeDosen
 	dosenUpdate.Preferensi = dosenData.Preferensi
 	dosenUpdate.RumpunID = dosenData.RumpunID
+	dosenUpdate.Load = dosenData.Load
 
 	result = p.db.Save(&dosenUpdate)
 

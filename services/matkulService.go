@@ -14,7 +14,7 @@ type matkulService struct {
 }
 
 type MatkulService interface {
-	CreateMatkul(matkulData models.Matkul) (*models.Matkul, errs.Errs)
+	CreateMatkul(matkulData []models.Matkul) (*[]models.Matkul, errs.Errs)
 	GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs)
 	DeleteMatkul(matkulID int) (string, errs.Errs)
 	UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs)
@@ -28,26 +28,31 @@ func NewMatkulService(matkulRepo matkul_repository.MatkulRepository, rumpunRepo 
 	}
 }
 
-func (p *matkulService) CreateMatkul(matkulData models.Matkul) (*models.Matkul, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkulData.RumpunID)
-	if errRumpun != nil || rumpun.ID == 0 {
-		return nil, errRumpun
+func (p *matkulService) CreateMatkul(matkulData []models.Matkul) (*[]models.Matkul, errs.Errs) {
+	var matkulCreateRespons []models.Matkul
+	for _, data := range matkulData {
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
+		if errRumpun != nil || rumpun.ID == 0 {
+			return nil, errRumpun
+		}
+
+		matkul := models.Matkul{
+			Nama:     data.Nama,
+			KodeMK:   data.KodeMK,
+			Tipe:     data.Tipe,
+			Semester: data.Semester,
+			RumpunID: data.RumpunID,
+			SKS:      data.SKS,
+		}
+		matkulCreated, err := p.matkulRepo.CreateMatkul(matkul)
+		if err != nil {
+			return nil, err
+		}
+		matkulCreateRespons = append(matkulCreateRespons, *matkulCreated)
+
 	}
 
-	matkul := models.Matkul{
-		Nama:     matkulData.Nama,
-		KodeMK:   matkulData.KodeMK,
-		Tipe:     matkulData.Tipe,
-		Semester: matkulData.Semester,
-		RumpunID: matkulData.RumpunID,
-		SKS:      matkulData.SKS,
-	}
-	matkulCreated, err := p.matkulRepo.CreateMatkul(matkul)
-	if err != nil {
-		return nil, err
-	}
-
-	return matkulCreated, nil
+	return &matkulCreateRespons, nil
 }
 
 func (p *matkulService) GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs) {

@@ -28,7 +28,7 @@ func NewDosenController(dosenService services.DosenService) DosenController {
 }
 
 func (p *dosenController) CreateDosen(c *gin.Context) {
-	var dosenData models.Dosen
+	var dosenData []models.Dosen
 	if err := c.ShouldBindJSON(&dosenData); err != nil {
 		bindErr := errs.NewBadRequestError(err.Error())
 

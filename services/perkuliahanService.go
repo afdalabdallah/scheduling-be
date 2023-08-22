@@ -51,11 +51,22 @@ func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliaha
 		MataKuliahId: int(matkul.ID),
 		DosenId:      int(dosen.ID),
 	}
+	var dosenLoads int
+	dosenLoads = dosen.Load + matkul.SKS
+	var dosenNew models.Dosen
+
+	dosenNew.Nama = dosen.Nama
+	dosenNew.KodeDosen = dosen.KodeDosen
+	dosenNew.Preferensi = dosen.Preferensi
+	dosenNew.RumpunID = dosen.RumpunID
+	dosenNew.Load = dosenLoads
+
+	dosenUpdateLoad, err := p.dosenRepo.UpdateDosen(int(dosen.ID), dosenNew)
 	PerkuliahanCreated, err := p.perkuliahanRepo.CreatePerkuliahan(Perkuliahan)
 	if err != nil {
 		return nil, err
 	}
-
+	println(dosenUpdateLoad)
 	return PerkuliahanCreated, nil
 }
 
