@@ -111,7 +111,32 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, er
 }
 
 func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs) {
+	perkuliahanData, errPerkuliahan := p.perkuliahanRepo.GetPerkuliahanById(PerkuliahanID)
+	if errPerkuliahan != nil {
+		return "", errPerkuliahan
+	}
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahanData.MataKuliahId)
+	if errMatkul != nil {
+		return "", errMatkul
+	}
+	dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahanData.DosenId)
+	if errDosen != nil {
+		return "", errDosen
+	}
+
+	var dosenLoads int
+	dosenLoads = dosen.Load - matkul.SKS
+	var dosenNew models.Dosen
+
+	dosenNew.Nama = dosen.Nama
+	dosenNew.KodeDosen = dosen.KodeDosen
+	dosenNew.Preferensi = dosen.Preferensi
+	dosenNew.RumpunID = dosen.RumpunID
+	dosenNew.Load = dosenLoads
+
+	dosenUpdateLoad, errDosenUpdate := p.dosenRepo.UpdateDosen(int(dosen.ID), dosenNew)
 	response, err := p.perkuliahanRepo.DeletePerkuliahan(PerkuliahanID)
+	println(dosenUpdateLoad, errDosenUpdate)
 	if err != nil {
 		return "", err
 	}
