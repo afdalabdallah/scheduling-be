@@ -23,6 +23,7 @@ type PerkuliahanService interface {
 	DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs)
 	UpdatePerkuliahan(PerkuliahanID int, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
 	GetPerkuliahanById(PerkuliahanID int) (*models.Perkuliahan, errs.Errs)
+	GetPerkuliahanFormat() (*[]dto.JadwalNewResponse, errs.Errs)
 }
 
 func NewPerkuliahanService(rumpunRepo rumpun_repository.RumpunRepository, matkulRepo matkul_repository.MatkulRepository, dosenRepo dosen_repository.DosenRepository, perkuliahanRepo perkuliahan_repository.PerkuliahanRepository) PerkuliahanService {
@@ -170,4 +171,42 @@ func (p *perkuliahanService) GetPerkuliahanById(PerkuliahanID int) (*models.Perk
 	}
 
 	return PerkuliahanData, nil
+}
+
+func (p *perkuliahanService) GetPerkuliahanFormat() (*[]dto.JadwalNewResponse, errs.Errs) {
+	perkuliahans, err := p.perkuliahanRepo.GetAllPerkuliahan()
+
+	var JadwalNewResponse []dto.JadwalNewResponse
+	for _, perkuliahan := range perkuliahans {
+		matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahan.MataKuliahId)
+		if errMatkul != nil {
+			return nil, errMatkul
+		}
+		dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahan.DosenId)
+		if errDosen != nil {
+			return nil, errDosen
+		}
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkul.RumpunID)
+		if errRumpun != nil {
+			return nil, errRumpun
+		}
+
+		JadwalResponse := dto.JadwalNewResponse{
+			KodeDosen:      dosen.KodeDosen,
+			KodeMataKuliah: matkul.KodeMK,
+			Kelas:          perkuliahan.Kelas,
+			Ruangan:        perkuliahan.Ruangan,
+			Sesi:           perkuliahan.Sesi,
+			Preferensi:     dto.Preferensi(dosen.Preferensi),
+			Tipe:           matkul.Tipe,
+			Rumpun:         rumpun.KodeRMK,
+		}
+		JadwalNewResponse = append(JadwalNewResponse, JadwalResponse)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &JadwalNewResponse, nil
 }

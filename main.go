@@ -68,6 +68,7 @@ func main() {
 	{
 		perkuliahanRoute.POST("/", perkuliahanController.CreatePerkuliahan)
 		perkuliahanRoute.GET("/", perkuliahanController.GetAllPerkuliahan)
+		perkuliahanRoute.GET("/jadwal", perkuliahanController.GetPerkuliahanFormat)
 		perkuliahanRoute.GET("/:perkuliahanID", perkuliahanController.GetPerkuliahanById)
 		perkuliahanRoute.PUT("/:perkuliahanID", perkuliahanController.UpdatePerkuliahan)
 		perkuliahanRoute.DELETE("/:perkuliahanID", perkuliahanController.DeletePerkuliahan)

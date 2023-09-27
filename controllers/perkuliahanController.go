@@ -19,6 +19,7 @@ type PerkuliahanController interface {
 	DeletePerkuliahan(c *gin.Context)
 	UpdatePerkuliahan(c *gin.Context)
 	GetPerkuliahanById(c *gin.Context)
+	GetPerkuliahanFormat(c *gin.Context)
 }
 
 func NewPerkuliahanController(PerkuliahanService services.PerkuliahanService) PerkuliahanController {
@@ -117,5 +118,14 @@ func (p *perkuliahanController) GetPerkuliahanById(c *gin.Context) {
 		return
 	}
 
+	c.JSON(200, response)
+}
+
+func (p *perkuliahanController) GetPerkuliahanFormat(c *gin.Context) {
+	response, err := p.PerkuliahanService.GetPerkuliahanFormat()
+	if err != nil {
+		c.JSON(err.Status(), err)
+		return
+	}
 	c.JSON(200, response)
 }

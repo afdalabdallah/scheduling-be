@@ -114,6 +114,7 @@ func (p *dosenController) GetDosenById(c *gin.Context) {
 
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)
+		print("msuk sini harusnya")
 		return
 	}
 
