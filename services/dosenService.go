@@ -16,9 +16,9 @@ type dosenService struct {
 type DosenService interface {
 	CreateDosen(dosenData []models.Dosen) (*[]models.Dosen, errs.Errs)
 	GetAllDosen() (*[]dto.DosenResponse, errs.Errs)
-	DeleteDosen(dosenID int) (string, errs.Errs)
-	UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs)
-	GetDosenById(dosenID int) (*dto.DosenResponse, errs.Errs)
+	DeleteDosen(dosenID uint) (string, errs.Errs)
+	UpdateDosen(dosenID uint, dosenData models.Dosen) (*models.Dosen, errs.Errs)
+	GetDosenById(dosenID uint) (*dto.DosenResponse, errs.Errs)
 }
 
 func NewDosenService(dosenRepo dosen_repository.DosenRepository, rumpunRepo rumpun_repository.RumpunRepository) DosenService {
@@ -31,7 +31,7 @@ func NewDosenService(dosenRepo dosen_repository.DosenRepository, rumpunRepo rump
 func (p *dosenService) CreateDosen(dosenData []models.Dosen) (*[]models.Dosen, errs.Errs) {
 	var dosenCreateResponse []models.Dosen
 	for _, data := range dosenData {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(data.RumpunID))
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
 		if errRumpun != nil || rumpun.ID == 0 {
 			return nil, errRumpun
 		}
@@ -77,7 +77,7 @@ func (p *dosenService) GetAllDosen() (*[]dto.DosenResponse, errs.Errs) {
 	return &dosenResponseArr, nil
 }
 
-func (p *dosenService) DeleteDosen(dosenID int) (string, errs.Errs) {
+func (p *dosenService) DeleteDosen(dosenID uint) (string, errs.Errs) {
 	response, err := p.dosenRepo.DeleteDosen(dosenID)
 	if err != nil {
 		return "", err
@@ -86,8 +86,8 @@ func (p *dosenService) DeleteDosen(dosenID int) (string, errs.Errs) {
 	return response, nil
 }
 
-func (p *dosenService) UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(dosenData.RumpunID))
+func (p *dosenService) UpdateDosen(dosenID uint, dosenData models.Dosen) (*models.Dosen, errs.Errs) {
+	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosenData.RumpunID)
 	if errRumpun != nil || rumpun.ID == 0 {
 		return nil, errRumpun
 	}
@@ -108,7 +108,7 @@ func (p *dosenService) UpdateDosen(dosenID int, dosenData models.Dosen) (*models
 	return dosenUpdated, nil
 }
 
-func (p *dosenService) GetDosenById(dosenID int) (*dto.DosenResponse, errs.Errs) {
+func (p *dosenService) GetDosenById(dosenID uint) (*dto.DosenResponse, errs.Errs) {
 	dosenData, err := p.dosenRepo.GetDosenById(dosenID)
 
 	if err != nil {

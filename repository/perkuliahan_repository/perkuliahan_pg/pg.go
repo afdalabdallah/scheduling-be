@@ -30,8 +30,7 @@ func (p *perkuliahanRepository) CreatePerkuliahan(Perkuliahan models.Perkuliahan
 
 func (p *perkuliahanRepository) GetAllPerkuliahan() ([]models.Perkuliahan, errs.Errs) {
 	var Perkuliahan []models.Perkuliahan
-
-	result := p.db.Find(&Perkuliahan)
+	result := p.db.Preload("Matkul").Preload("Rumpun").Preload("Dosen").Find(&Perkuliahan)
 	err := result.Error
 
 	if err != nil {
@@ -41,7 +40,7 @@ func (p *perkuliahanRepository) GetAllPerkuliahan() ([]models.Perkuliahan, errs.
 	return Perkuliahan, nil
 }
 
-func (p *perkuliahanRepository) DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs) {
+func (p *perkuliahanRepository) DeletePerkuliahan(PerkuliahanID uint) (string, errs.Errs) {
 	result := p.db.Delete(&models.Perkuliahan{}, PerkuliahanID)
 
 	err := result.Error
@@ -53,7 +52,7 @@ func (p *perkuliahanRepository) DeletePerkuliahan(PerkuliahanID int) (string, er
 	return "Mata Kuliah has been successfully deleted", nil
 }
 
-func (p *perkuliahanRepository) UpdatePerkuliahan(PerkuliahanID int, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
+func (p *perkuliahanRepository) UpdatePerkuliahan(PerkuliahanID uint, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
 	var PerkuliahanUpdate models.Perkuliahan
 
 	// Get data by id
@@ -67,7 +66,8 @@ func (p *perkuliahanRepository) UpdatePerkuliahan(PerkuliahanID int, Perkuliahan
 	PerkuliahanUpdate.Kelas = PerkuliahanData.Kelas
 	PerkuliahanUpdate.Sesi = PerkuliahanData.Sesi
 	PerkuliahanUpdate.Ruangan = PerkuliahanData.Ruangan
-	PerkuliahanUpdate.MataKuliahId = PerkuliahanData.MataKuliahId
+	PerkuliahanUpdate.MatkulID = PerkuliahanData.MatkulID
+	PerkuliahanUpdate.RumpunID = PerkuliahanData.RumpunID
 
 	result = p.db.Save(&PerkuliahanUpdate)
 
@@ -78,11 +78,10 @@ func (p *perkuliahanRepository) UpdatePerkuliahan(PerkuliahanID int, Perkuliahan
 	return &PerkuliahanUpdate, nil
 }
 
-func (p *perkuliahanRepository) GetPerkuliahanById(PerkuliahanID int) (*models.Perkuliahan, errs.Errs) {
+func (p *perkuliahanRepository) GetPerkuliahanById(PerkuliahanID uint) (*models.Perkuliahan, errs.Errs) {
 	var PerkuliahanData models.Perkuliahan
 
-	result := p.db.First(&PerkuliahanData, PerkuliahanID)
-
+	result := p.db.Preload("Matkul").Preload("Rumpun").Preload("Dosen").Find(&PerkuliahanData)
 	err := result.Error
 	if err != nil {
 		return nil, errs.NewBadRequestError(err.Error())

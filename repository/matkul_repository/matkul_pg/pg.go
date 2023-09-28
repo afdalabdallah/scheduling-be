@@ -31,7 +31,7 @@ func (p *matkulRepository) CreateMatkul(matkul models.Matkul) (*models.Matkul, e
 func (p *matkulRepository) GetAllMatkul() ([]models.Matkul, errs.Errs) {
 	var matkul []models.Matkul
 
-	result := p.db.Find(&matkul)
+	result := p.db.Preload("Rumpun").Find(&matkul)
 	err := result.Error
 
 	if err != nil {
@@ -41,8 +41,8 @@ func (p *matkulRepository) GetAllMatkul() ([]models.Matkul, errs.Errs) {
 	return matkul, nil
 }
 
-func (p *matkulRepository) DeleteMatkul(matkulID int) (string, errs.Errs) {
-	result := p.db.Delete(&models.Matkul{}, matkulID)
+func (p *matkulRepository) DeleteMatkul(matkulID uint) (string, errs.Errs) {
+	result := p.db.Select("Perkuliahan").Unscoped().Delete(&models.Matkul{}, matkulID)
 
 	err := result.Error
 
@@ -53,7 +53,7 @@ func (p *matkulRepository) DeleteMatkul(matkulID int) (string, errs.Errs) {
 	return "Mata Kuliah has been successfully deleted", nil
 }
 
-func (p *matkulRepository) UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs) {
+func (p *matkulRepository) UpdateMatkul(matkulID uint, matkulData models.Matkul) (*models.Matkul, errs.Errs) {
 	var matkulUpdate models.Matkul
 
 	// Get data by id
@@ -79,10 +79,10 @@ func (p *matkulRepository) UpdateMatkul(matkulID int, matkulData models.Matkul) 
 	return &matkulUpdate, nil
 }
 
-func (p *matkulRepository) GetMatkulById(matkulID int) (*models.Matkul, errs.Errs) {
+func (p *matkulRepository) GetMatkulById(matkulID uint) (*models.Matkul, errs.Errs) {
 	var matkulData models.Matkul
 
-	result := p.db.First(&matkulData, matkulID)
+	result := p.db.Preload("Rumpun").First(&matkulData, matkulID)
 
 	err := result.Error
 	if err != nil {

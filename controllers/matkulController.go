@@ -64,7 +64,7 @@ func (p *matkulController) DeleteMatkul(c *gin.Context) {
 		return
 	}
 
-	response, deleteErr := p.matkulService.DeleteMatkul(matkulID)
+	response, deleteErr := p.matkulService.DeleteMatkul(uint(matkulID))
 
 	if deleteErr != nil {
 		c.JSON(deleteErr.Status(), deleteErr)
@@ -92,7 +92,7 @@ func (p *matkulController) UpdateMatkul(c *gin.Context) {
 		return
 	}
 
-	response, updateErr := p.matkulService.UpdateMatkul(matkulID, matkulData)
+	response, updateErr := p.matkulService.UpdateMatkul(uint(matkulID), matkulData)
 
 	if updateErr != nil {
 		c.JSON(updateErr.Status(), updateErr)
@@ -110,7 +110,7 @@ func (p *matkulController) GetMatkulById(c *gin.Context) {
 		return
 	}
 
-	response, getErr := p.matkulService.GetMatkulById(matkulID)
+	response, getErr := p.matkulService.GetMatkulById(uint(matkulID))
 
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)

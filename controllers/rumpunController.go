@@ -64,7 +64,7 @@ func (p *rumpunController) DeleteRumpun(c *gin.Context) {
 		return
 	}
 
-	response, deleteErr := p.rumpunService.DeleteRumpun(rumpunID)
+	response, deleteErr := p.rumpunService.DeleteRumpun(uint(rumpunID))
 
 	if deleteErr != nil {
 		c.JSON(deleteErr.Status(), deleteErr)
@@ -92,7 +92,7 @@ func (p *rumpunController) UpdateRumpun(c *gin.Context) {
 		return
 	}
 
-	response, updateErr := p.rumpunService.UpdateRumpun(rumpunID, rumpunData)
+	response, updateErr := p.rumpunService.UpdateRumpun(uint(rumpunID), rumpunData)
 
 	if updateErr != nil {
 		c.JSON(updateErr.Status(), updateErr)
@@ -110,7 +110,7 @@ func (p *rumpunController) GetRumpunById(c *gin.Context) {
 		return
 	}
 
-	response, getErr := p.rumpunService.GetRumpunById(rumpunID)
+	response, getErr := p.rumpunService.GetRumpunById(uint(rumpunID))
 
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)

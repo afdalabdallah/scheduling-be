@@ -65,7 +65,7 @@ func (p *perkuliahanController) DeletePerkuliahan(c *gin.Context) {
 		return
 	}
 
-	response, deleteErr := p.PerkuliahanService.DeletePerkuliahan(PerkuliahanID)
+	response, deleteErr := p.PerkuliahanService.DeletePerkuliahan(uint(PerkuliahanID))
 
 	if deleteErr != nil {
 		c.JSON(deleteErr.Status(), deleteErr)
@@ -93,7 +93,7 @@ func (p *perkuliahanController) UpdatePerkuliahan(c *gin.Context) {
 		return
 	}
 
-	response, updateErr := p.PerkuliahanService.UpdatePerkuliahan(PerkuliahanID, PerkuliahanData)
+	response, updateErr := p.PerkuliahanService.UpdatePerkuliahan(uint(PerkuliahanID), PerkuliahanData)
 
 	if updateErr != nil {
 		c.JSON(updateErr.Status(), updateErr)
@@ -111,7 +111,7 @@ func (p *perkuliahanController) GetPerkuliahanById(c *gin.Context) {
 		return
 	}
 
-	response, getErr := p.PerkuliahanService.GetPerkuliahanById(PerkuliahanID)
+	response, getErr := p.PerkuliahanService.GetPerkuliahanById(uint(PerkuliahanID))
 
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)

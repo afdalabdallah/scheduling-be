@@ -8,7 +8,7 @@ import (
 type RumpunRepository interface {
 	CreateRumpun(rumpun models.Rumpun) (*models.Rumpun, errs.Errs)
 	GetAllRumpun() ([]models.Rumpun, errs.Errs)
-	DeleteRMK(rumpunID int) (string, errs.Errs)
-	UpdateRMK(rumpunID int, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
-	GetRumpunById(rumpunID int) (*models.Rumpun, errs.Errs)
+	DeleteRMK(rumpunID uint) (string, errs.Errs)
+	UpdateRMK(rumpunID uint, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
+	GetRumpunById(rumpunID uint) (*models.Rumpun, errs.Errs)
 }

@@ -64,7 +64,7 @@ func (p *dosenController) DeleteDosen(c *gin.Context) {
 		return
 	}
 
-	response, deleteErr := p.dosenService.DeleteDosen(dosenID)
+	response, deleteErr := p.dosenService.DeleteDosen(uint(dosenID))
 
 	if deleteErr != nil {
 		c.JSON(deleteErr.Status(), deleteErr)
@@ -92,7 +92,7 @@ func (p *dosenController) UpdateDosen(c *gin.Context) {
 		return
 	}
 
-	response, updateErr := p.dosenService.UpdateDosen(dosenID, dosenData)
+	response, updateErr := p.dosenService.UpdateDosen(uint(dosenID), dosenData)
 
 	if updateErr != nil {
 		c.JSON(updateErr.Status(), updateErr)
@@ -110,7 +110,7 @@ func (p *dosenController) GetDosenById(c *gin.Context) {
 		return
 	}
 
-	response, getErr := p.dosenService.GetDosenById(dosenID)
+	response, getErr := p.dosenService.GetDosenById(uint(dosenID))
 
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)

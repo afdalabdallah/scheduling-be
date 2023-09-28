@@ -8,7 +8,7 @@ import (
 type PerkuliahanRepository interface {
 	CreatePerkuliahan(perkuliahan models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
 	GetAllPerkuliahan() ([]models.Perkuliahan, errs.Errs)
-	DeletePerkuliahan(perkuliahanID int) (string, errs.Errs)
-	UpdatePerkuliahan(perkuliahanID int, perkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
-	GetPerkuliahanById(perkuliahanID int) (*models.Perkuliahan, errs.Errs)
+	DeletePerkuliahan(perkuliahanID uint) (string, errs.Errs)
+	UpdatePerkuliahan(perkuliahanID uint, perkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
+	GetPerkuliahanById(perkuliahanID uint) (*models.Perkuliahan, errs.Errs)
 }

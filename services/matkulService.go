@@ -16,9 +16,9 @@ type matkulService struct {
 type MatkulService interface {
 	CreateMatkul(matkulData []models.Matkul) (*[]models.Matkul, errs.Errs)
 	GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs)
-	DeleteMatkul(matkulID int) (string, errs.Errs)
-	UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs)
-	GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.Errs)
+	DeleteMatkul(matkulID uint) (string, errs.Errs)
+	UpdateMatkul(matkulID uint, matkulData models.Matkul) (*models.Matkul, errs.Errs)
+	GetMatkulById(matkulID uint) (*dto.MatkulResponse, errs.Errs)
 }
 
 func NewMatkulService(matkulRepo matkul_repository.MatkulRepository, rumpunRepo rumpun_repository.RumpunRepository) MatkulService {
@@ -31,7 +31,7 @@ func NewMatkulService(matkulRepo matkul_repository.MatkulRepository, rumpunRepo 
 func (p *matkulService) CreateMatkul(matkulData []models.Matkul) (*[]models.Matkul, errs.Errs) {
 	var matkulCreateRespons []models.Matkul
 	for _, data := range matkulData {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(data.RumpunID))
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
 		if errRumpun != nil || rumpun.ID == 0 {
 			return nil, errRumpun
 		}
@@ -79,7 +79,7 @@ func (p *matkulService) GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs) {
 	return &matkulRespons, nil
 }
 
-func (p *matkulService) DeleteMatkul(matkulID int) (string, errs.Errs) {
+func (p *matkulService) DeleteMatkul(matkulID uint) (string, errs.Errs) {
 	response, err := p.matkulRepo.DeleteMatkul(matkulID)
 	if err != nil {
 		return "", err
@@ -88,8 +88,8 @@ func (p *matkulService) DeleteMatkul(matkulID int) (string, errs.Errs) {
 	return response, nil
 }
 
-func (p *matkulService) UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(matkulData.RumpunID))
+func (p *matkulService) UpdateMatkul(matkulID uint, matkulData models.Matkul) (*models.Matkul, errs.Errs) {
+	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkulData.RumpunID)
 	if errRumpun != nil || rumpun.ID == 0 {
 		return nil, errRumpun
 	}
@@ -111,7 +111,7 @@ func (p *matkulService) UpdateMatkul(matkulID int, matkulData models.Matkul) (*m
 	return matkulUpdated, nil
 }
 
-func (p *matkulService) GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.Errs) {
+func (p *matkulService) GetMatkulById(matkulID uint) (*dto.MatkulResponse, errs.Errs) {
 	matkulData, err := p.matkulRepo.GetMatkulById(matkulID)
 
 	if err != nil {

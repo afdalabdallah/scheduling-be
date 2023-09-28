@@ -14,9 +14,9 @@ type rumpunService struct {
 type RumpunService interface {
 	CreateRumpun(rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
 	GetAllRumpun() (*[]dto.RumpunResponse, errs.Errs)
-	DeleteRumpun(rumpunID int) (string, errs.Errs)
-	UpdateRumpun(rumpunID int, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
-	GetRumpunById(rumpunID int) (*models.Rumpun, errs.Errs)
+	DeleteRumpun(rumpunID uint) (string, errs.Errs)
+	UpdateRumpun(rumpunID uint, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs)
+	GetRumpunById(rumpunID uint) (*models.Rumpun, errs.Errs)
 }
 
 func NewRumpunService(rumpunRepo rumpun_repository.RumpunRepository) RumpunService {
@@ -58,7 +58,7 @@ func (p *rumpunService) GetAllRumpun() (*[]dto.RumpunResponse, errs.Errs) {
 	return &rumpunResponse, nil
 }
 
-func (p *rumpunService) DeleteRumpun(rumpunID int) (string, errs.Errs) {
+func (p *rumpunService) DeleteRumpun(rumpunID uint) (string, errs.Errs) {
 	response, err := p.rumpunRepo.DeleteRMK(rumpunID)
 	if err != nil {
 		return "", err
@@ -67,7 +67,7 @@ func (p *rumpunService) DeleteRumpun(rumpunID int) (string, errs.Errs) {
 	return response, nil
 }
 
-func (p *rumpunService) UpdateRumpun(rumpunID int, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs) {
+func (p *rumpunService) UpdateRumpun(rumpunID uint, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs) {
 	rumpun := models.Rumpun{
 		Nama:    rumpunData.Nama,
 		KodeRMK: rumpunData.KodeRMK,
@@ -82,7 +82,7 @@ func (p *rumpunService) UpdateRumpun(rumpunID int, rumpunData models.Rumpun) (*m
 	return rumpunUpdated, nil
 }
 
-func (p *rumpunService) GetRumpunById(rumpunID int) (*models.Rumpun, errs.Errs) {
+func (p *rumpunService) GetRumpunById(rumpunID uint) (*models.Rumpun, errs.Errs) {
 	rumpunData, err := p.rumpunRepo.GetRumpunById(rumpunID)
 
 	if err != nil {

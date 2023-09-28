@@ -8,7 +8,7 @@ import (
 type DosenRepository interface {
 	CreateDosen(dosen models.Dosen) (*models.Dosen, errs.Errs)
 	GetAllDosen() ([]models.Dosen, errs.Errs)
-	DeleteDosen(dosenID int) (string, errs.Errs)
-	UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs)
-	GetDosenById(dosenID int) (*models.Dosen, errs.Errs)
+	DeleteDosen(dosenID uint) (string, errs.Errs)
+	UpdateDosen(dosenID uint, dosenData models.Dosen) (*models.Dosen, errs.Errs)
+	GetDosenById(dosenID uint) (*models.Dosen, errs.Errs)
 }

@@ -31,6 +31,6 @@ type DosenResponse struct {
 	Nama       string     `json:"nama"`
 	KodeDosen  string     `json:"kode_dosen"`
 	Preferensi Preferensi `json:"preferensi"`
-	Rumpun     string     `json:"rumpun_id"`
+	Rumpun     string     `json:"rumpun"`
 	Load       int        `json:"load"`
 }

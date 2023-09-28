@@ -44,8 +44,8 @@ func (p *rumpunRepository) GetAllRumpun() ([]models.Rumpun, errs.Errs) {
 }
 
 // Delete RMK
-func (p *rumpunRepository) DeleteRMK(rumpunID int) (string, errs.Errs) {
-	result := p.db.Delete(&models.Rumpun{}, rumpunID)
+func (p *rumpunRepository) DeleteRMK(rumpunID uint) (string, errs.Errs) {
+	result := p.db.Unscoped().Delete(&models.Rumpun{}, rumpunID)
 
 	err := result.Error
 
@@ -57,7 +57,7 @@ func (p *rumpunRepository) DeleteRMK(rumpunID int) (string, errs.Errs) {
 }
 
 // Update RMK
-func (p *rumpunRepository) UpdateRMK(rumpunID int, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs) {
+func (p *rumpunRepository) UpdateRMK(rumpunID uint, rumpunData models.Rumpun) (*models.Rumpun, errs.Errs) {
 	var rumpunUpdate models.Rumpun
 
 	// Get data by id
@@ -80,7 +80,7 @@ func (p *rumpunRepository) UpdateRMK(rumpunID int, rumpunData models.Rumpun) (*m
 	return &rumpunUpdate, nil
 }
 
-func (p *rumpunRepository) GetRumpunById(rumpunID int) (*models.Rumpun, errs.Errs) {
+func (p *rumpunRepository) GetRumpunById(rumpunID uint) (*models.Rumpun, errs.Errs) {
 	var rumpunData models.Rumpun
 
 	result := p.db.First(&rumpunData, rumpunID)

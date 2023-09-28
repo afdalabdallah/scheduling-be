@@ -30,7 +30,7 @@ func (p *dosenRepository) CreateDosen(dosen models.Dosen) (*models.Dosen, errs.E
 func (p *dosenRepository) GetAllDosen() ([]models.Dosen, errs.Errs) {
 	var dosen []models.Dosen
 
-	result := p.db.Find(&dosen)
+	result := p.db.Preload("Rumpun").Find(&dosen)
 	err := result.Error
 
 	if err != nil {
@@ -40,8 +40,8 @@ func (p *dosenRepository) GetAllDosen() ([]models.Dosen, errs.Errs) {
 	return dosen, nil
 }
 
-func (p *dosenRepository) DeleteDosen(dosenID int) (string, errs.Errs) {
-	result := p.db.Delete(&models.Dosen{}, dosenID)
+func (p *dosenRepository) DeleteDosen(dosenID uint) (string, errs.Errs) {
+	result := p.db.Unscoped().Delete(&models.Dosen{}, dosenID)
 
 	err := result.Error
 
@@ -52,7 +52,7 @@ func (p *dosenRepository) DeleteDosen(dosenID int) (string, errs.Errs) {
 	return "Mata Kuliah has been successfully deleted", nil
 }
 
-func (p *dosenRepository) UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs) {
+func (p *dosenRepository) UpdateDosen(dosenID uint, dosenData models.Dosen) (*models.Dosen, errs.Errs) {
 	var dosenUpdate models.Dosen
 
 	// Get data by id
@@ -78,10 +78,10 @@ func (p *dosenRepository) UpdateDosen(dosenID int, dosenData models.Dosen) (*mod
 	return &dosenUpdate, nil
 }
 
-func (p *dosenRepository) GetDosenById(dosenID int) (*models.Dosen, errs.Errs) {
+func (p *dosenRepository) GetDosenById(dosenID uint) (*models.Dosen, errs.Errs) {
 	var dosenData models.Dosen
 
-	result := p.db.First(&dosenData, dosenID)
+	result := p.db.Preload("Rumpun").First(&dosenData, dosenID)
 
 	err := result.Error
 	if err != nil {

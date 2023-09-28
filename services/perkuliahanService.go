@@ -20,9 +20,9 @@ type perkuliahanService struct {
 type PerkuliahanService interface {
 	CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
 	GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, errs.Errs)
-	DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs)
-	UpdatePerkuliahan(PerkuliahanID int, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
-	GetPerkuliahanById(PerkuliahanID int) (*models.Perkuliahan, errs.Errs)
+	DeletePerkuliahan(PerkuliahanID uint) (string, errs.Errs)
+	UpdatePerkuliahan(PerkuliahanID uint, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
+	GetPerkuliahanById(PerkuliahanID uint) (*models.Perkuliahan, errs.Errs)
 	GetPerkuliahanFormat() (*[]dto.JadwalNewResponse, errs.Errs)
 }
 
@@ -36,21 +36,22 @@ func NewPerkuliahanService(rumpunRepo rumpun_repository.RumpunRepository, matkul
 }
 
 func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
-	matkul, errMatkul := p.matkulRepo.GetMatkulById(int(PerkuliahanData.MataKuliahId))
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(PerkuliahanData.MatkulID)
 	if errMatkul != nil {
 		return nil, errMatkul
 	}
-	dosen, errDosen := p.dosenRepo.GetDosenById(int(PerkuliahanData.DosenId))
+	dosen, errDosen := p.dosenRepo.GetDosenById(PerkuliahanData.DosenID)
 	if errDosen != nil {
 		return nil, errDosen
 	}
 
 	Perkuliahan := models.Perkuliahan{
-		Sesi:         PerkuliahanData.Sesi,
-		Kelas:        PerkuliahanData.Kelas,
-		Ruangan:      PerkuliahanData.Ruangan,
-		MataKuliahId: matkul.ID,
-		DosenId:      dosen.ID,
+		Sesi:     PerkuliahanData.Sesi,
+		Kelas:    PerkuliahanData.Kelas,
+		Ruangan:  PerkuliahanData.Ruangan,
+		MatkulID: matkul.ID,
+		DosenID:  dosen.ID,
+		RumpunID: matkul.Rumpun.ID,
 	}
 	var dosenLoads int
 	dosenLoads = dosen.Load + matkul.SKS
@@ -62,7 +63,7 @@ func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliaha
 	dosenNew.RumpunID = dosen.RumpunID
 	dosenNew.Load = dosenLoads
 
-	dosenUpdateLoad, err := p.dosenRepo.UpdateDosen(int(dosen.ID), dosenNew)
+	dosenUpdateLoad, err := p.dosenRepo.UpdateDosen(dosen.ID, dosenNew)
 	PerkuliahanCreated, err := p.perkuliahanRepo.CreatePerkuliahan(Perkuliahan)
 	if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, er
 			KodeMataKuliah: perkuliahan.Matkul.KodeMK,
 			MataKuliah:     perkuliahan.Matkul.Nama,
 			DosenNama:      perkuliahan.Dosen.Nama,
-			Rumpun:         perkuliahan.Matkul.Rumpun.KodeRMK,
+			Rumpun:         perkuliahan.Rumpun.KodeRMK,
 			KodeDosen:      perkuliahan.Dosen.KodeDosen,
 			Semester:       perkuliahan.Matkul.Semester,
 		}
@@ -99,16 +100,16 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, er
 	return &perkuliahanRespons, nil
 }
 
-func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID int) (string, errs.Errs) {
+func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID uint) (string, errs.Errs) {
 	perkuliahanData, errPerkuliahan := p.perkuliahanRepo.GetPerkuliahanById(PerkuliahanID)
 	if errPerkuliahan != nil {
 		return "", errPerkuliahan
 	}
-	matkul, errMatkul := p.matkulRepo.GetMatkulById(int(perkuliahanData.MataKuliahId))
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahanData.MatkulID)
 	if errMatkul != nil {
 		return "", errMatkul
 	}
-	dosen, errDosen := p.dosenRepo.GetDosenById(int(perkuliahanData.DosenId))
+	dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahanData.DosenID)
 	if errDosen != nil {
 		return "", errDosen
 	}
@@ -123,7 +124,7 @@ func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID int) (string, errs.
 	dosenNew.RumpunID = dosen.RumpunID
 	dosenNew.Load = dosenLoads
 
-	dosenUpdateLoad, errDosenUpdate := p.dosenRepo.UpdateDosen(int(dosen.ID), dosenNew)
+	dosenUpdateLoad, errDosenUpdate := p.dosenRepo.UpdateDosen(dosen.ID, dosenNew)
 	response, err := p.perkuliahanRepo.DeletePerkuliahan(PerkuliahanID)
 	println(dosenUpdateLoad, errDosenUpdate)
 	if err != nil {
@@ -133,13 +134,14 @@ func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID int) (string, errs.
 	return response, nil
 }
 
-func (p *perkuliahanService) UpdatePerkuliahan(PerkuliahanID int, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
+func (p *perkuliahanService) UpdatePerkuliahan(PerkuliahanID uint, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
 	Perkuliahan := models.Perkuliahan{
-		Sesi:         PerkuliahanData.Sesi,
-		Kelas:        PerkuliahanData.Kelas,
-		Ruangan:      PerkuliahanData.Ruangan,
-		MataKuliahId: PerkuliahanData.MataKuliahId,
-		DosenId:      PerkuliahanData.DosenId,
+		Sesi:     PerkuliahanData.Sesi,
+		Kelas:    PerkuliahanData.Kelas,
+		Ruangan:  PerkuliahanData.Ruangan,
+		MatkulID: PerkuliahanData.MatkulID,
+		DosenID:  PerkuliahanData.DosenID,
+		RumpunID: PerkuliahanData.RumpunID,
 	}
 
 	PerkuliahanUpdated, err := p.perkuliahanRepo.UpdatePerkuliahan(PerkuliahanID, Perkuliahan)
@@ -151,7 +153,7 @@ func (p *perkuliahanService) UpdatePerkuliahan(PerkuliahanID int, PerkuliahanDat
 	return PerkuliahanUpdated, nil
 }
 
-func (p *perkuliahanService) GetPerkuliahanById(PerkuliahanID int) (*models.Perkuliahan, errs.Errs) {
+func (p *perkuliahanService) GetPerkuliahanById(PerkuliahanID uint) (*models.Perkuliahan, errs.Errs) {
 	PerkuliahanData, err := p.perkuliahanRepo.GetPerkuliahanById(PerkuliahanID)
 
 	if err != nil {
