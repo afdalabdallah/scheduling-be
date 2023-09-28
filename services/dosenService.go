@@ -31,7 +31,7 @@ func NewDosenService(dosenRepo dosen_repository.DosenRepository, rumpunRepo rump
 func (p *dosenService) CreateDosen(dosenData []models.Dosen) (*[]models.Dosen, errs.Errs) {
 	var dosenCreateResponse []models.Dosen
 	for _, data := range dosenData {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(data.RumpunID))
 		if errRumpun != nil || rumpun.ID == 0 {
 			return nil, errRumpun
 		}
@@ -62,16 +62,13 @@ func (p *dosenService) GetAllDosen() (*[]dto.DosenResponse, errs.Errs) {
 
 	var dosenResponseArr []dto.DosenResponse
 	for _, dosen := range dosens {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosen.RumpunID)
-		if errRumpun != nil {
-			return nil, errRumpun
-		}
+
 		dosenResponse := dto.DosenResponse{
 			ID:         int(dosen.ID),
 			Nama:       dosen.Nama,
 			KodeDosen:  dosen.KodeDosen,
 			Preferensi: dto.Preferensi(dosen.Preferensi),
-			Rumpun:     rumpun.KodeRMK,
+			Rumpun:     dosen.Rumpun.KodeRMK,
 			Load:       dosen.Load,
 		}
 		dosenResponseArr = append(dosenResponseArr, dosenResponse)
@@ -90,7 +87,7 @@ func (p *dosenService) DeleteDosen(dosenID int) (string, errs.Errs) {
 }
 
 func (p *dosenService) UpdateDosen(dosenID int, dosenData models.Dosen) (*models.Dosen, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosenData.RumpunID)
+	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(dosenData.RumpunID))
 	if errRumpun != nil || rumpun.ID == 0 {
 		return nil, errRumpun
 	}
@@ -113,10 +110,7 @@ func (p *dosenService) UpdateDosen(dosenID int, dosenData models.Dosen) (*models
 
 func (p *dosenService) GetDosenById(dosenID int) (*dto.DosenResponse, errs.Errs) {
 	dosenData, err := p.dosenRepo.GetDosenById(dosenID)
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(dosenData.RumpunID)
-	if errRumpun != nil || rumpun.ID == 0 {
-		return nil, errRumpun
-	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +120,7 @@ func (p *dosenService) GetDosenById(dosenID int) (*dto.DosenResponse, errs.Errs)
 		Nama:       dosenData.Nama,
 		KodeDosen:  dosenData.KodeDosen,
 		Preferensi: dto.Preferensi(dosenData.Preferensi),
-		Rumpun:     rumpun.KodeRMK,
+		Rumpun:     dosenData.Rumpun.KodeRMK,
 	}
 
 	return &dosenResponse, nil

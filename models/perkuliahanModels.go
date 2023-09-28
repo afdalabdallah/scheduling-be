@@ -9,6 +9,8 @@ type Perkuliahan struct {
 	Kelas        string `json:"kelas"`
 	Sesi         string `json:"sesi"`
 	Ruangan      string `json:"ruangan"`
-	MataKuliahId int    `json:"mata_kuliah_id"`
-	DosenId      int    `json:"dosen_id"`
+	MataKuliahId uint   `json:"mata_kuliah_id" gorm:"constraint:OnDelete:CASCADE, OnUpdate:CASCADE"`
+	DosenId      uint   `json:"dosen_id" gorm:"constraint:OnDelete:SET NULL, OnUpdate:CASCADE"`
+	Matkul       Matkul `gorm:"foreignKey:MataKuliahId"`
+	Dosen        Dosen  `gorm:"foreignKey:DosenId"`
 }

@@ -36,11 +36,11 @@ func NewPerkuliahanService(rumpunRepo rumpun_repository.RumpunRepository, matkul
 }
 
 func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
-	matkul, errMatkul := p.matkulRepo.GetMatkulById(PerkuliahanData.MataKuliahId)
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(int(PerkuliahanData.MataKuliahId))
 	if errMatkul != nil {
 		return nil, errMatkul
 	}
-	dosen, errDosen := p.dosenRepo.GetDosenById(PerkuliahanData.DosenId)
+	dosen, errDosen := p.dosenRepo.GetDosenById(int(PerkuliahanData.DosenId))
 	if errDosen != nil {
 		return nil, errDosen
 	}
@@ -49,8 +49,8 @@ func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliaha
 		Sesi:         PerkuliahanData.Sesi,
 		Kelas:        PerkuliahanData.Kelas,
 		Ruangan:      PerkuliahanData.Ruangan,
-		MataKuliahId: int(matkul.ID),
-		DosenId:      int(dosen.ID),
+		MataKuliahId: matkul.ID,
+		DosenId:      dosen.ID,
 	}
 	var dosenLoads int
 	dosenLoads = dosen.Load + matkul.SKS
@@ -76,30 +76,18 @@ func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, er
 
 	var perkuliahanRespons []dto.PerkuliahanResponse
 	for _, perkuliahan := range perkuliahans {
-		matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahan.MataKuliahId)
-		if errMatkul != nil {
-			return nil, errMatkul
-		}
-		dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahan.DosenId)
-		if errDosen != nil {
-			return nil, errDosen
-		}
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkul.RumpunID)
-		if errRumpun != nil {
-			return nil, errRumpun
-		}
 
 		perkuliahanResponsData := dto.PerkuliahanResponse{
 			ID:             int(perkuliahan.ID),
 			Sesi:           perkuliahan.Sesi,
 			Kelas:          perkuliahan.Kelas,
 			Ruangan:        perkuliahan.Ruangan,
-			KodeMataKuliah: matkul.KodeMK,
-			MataKuliah:     matkul.Nama,
-			DosenNama:      dosen.Nama,
-			Rumpun:         rumpun.KodeRMK,
-			KodeDosen:      dosen.KodeDosen,
-			Semester:       matkul.Semester,
+			KodeMataKuliah: perkuliahan.Matkul.KodeMK,
+			MataKuliah:     perkuliahan.Matkul.Nama,
+			DosenNama:      perkuliahan.Dosen.Nama,
+			Rumpun:         perkuliahan.Matkul.Rumpun.KodeRMK,
+			KodeDosen:      perkuliahan.Dosen.KodeDosen,
+			Semester:       perkuliahan.Matkul.Semester,
 		}
 		perkuliahanRespons = append(perkuliahanRespons, perkuliahanResponsData)
 	}
@@ -116,11 +104,11 @@ func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID int) (string, errs.
 	if errPerkuliahan != nil {
 		return "", errPerkuliahan
 	}
-	matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahanData.MataKuliahId)
+	matkul, errMatkul := p.matkulRepo.GetMatkulById(int(perkuliahanData.MataKuliahId))
 	if errMatkul != nil {
 		return "", errMatkul
 	}
-	dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahanData.DosenId)
+	dosen, errDosen := p.dosenRepo.GetDosenById(int(perkuliahanData.DosenId))
 	if errDosen != nil {
 		return "", errDosen
 	}
@@ -178,28 +166,16 @@ func (p *perkuliahanService) GetPerkuliahanFormat() (*[]dto.JadwalNewResponse, e
 
 	var JadwalNewResponse []dto.JadwalNewResponse
 	for _, perkuliahan := range perkuliahans {
-		matkul, errMatkul := p.matkulRepo.GetMatkulById(perkuliahan.MataKuliahId)
-		if errMatkul != nil {
-			return nil, errMatkul
-		}
-		dosen, errDosen := p.dosenRepo.GetDosenById(perkuliahan.DosenId)
-		if errDosen != nil {
-			return nil, errDosen
-		}
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkul.RumpunID)
-		if errRumpun != nil {
-			return nil, errRumpun
-		}
 
 		JadwalResponse := dto.JadwalNewResponse{
-			KodeDosen:      dosen.KodeDosen,
-			KodeMataKuliah: matkul.KodeMK,
+			KodeDosen:      perkuliahan.Dosen.KodeDosen,
+			KodeMataKuliah: perkuliahan.Matkul.KodeMK,
 			Kelas:          perkuliahan.Kelas,
 			Ruangan:        perkuliahan.Ruangan,
 			Sesi:           perkuliahan.Sesi,
-			Preferensi:     dto.Preferensi(dosen.Preferensi),
-			Tipe:           matkul.Tipe,
-			Rumpun:         rumpun.KodeRMK,
+			Preferensi:     dto.Preferensi(perkuliahan.Dosen.Preferensi),
+			Tipe:           perkuliahan.Matkul.Tipe,
+			Rumpun:         perkuliahan.Matkul.Rumpun.KodeRMK,
 		}
 		JadwalNewResponse = append(JadwalNewResponse, JadwalResponse)
 	}

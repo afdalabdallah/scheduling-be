@@ -24,7 +24,6 @@ func (p *dosenRepository) CreateDosen(dosen models.Dosen) (*models.Dosen, errs.E
 	if err != nil {
 		return nil, errs.NewBadRequestError(err.Error())
 	}
-
 	return &dosen, nil
 }
 

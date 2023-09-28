@@ -31,7 +31,7 @@ func NewMatkulService(matkulRepo matkul_repository.MatkulRepository, rumpunRepo 
 func (p *matkulService) CreateMatkul(matkulData []models.Matkul) (*[]models.Matkul, errs.Errs) {
 	var matkulCreateRespons []models.Matkul
 	for _, data := range matkulData {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(data.RumpunID)
+		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(data.RumpunID))
 		if errRumpun != nil || rumpun.ID == 0 {
 			return nil, errRumpun
 		}
@@ -63,10 +63,6 @@ func (p *matkulService) GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs) {
 
 	var matkulRespons []dto.MatkulResponse
 	for _, matkul := range matkuls {
-		rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkul.RumpunID)
-		if errRumpun != nil {
-			return nil, errRumpun
-		}
 
 		matkulResponsData := dto.MatkulResponse{
 			ID:       int(matkul.ID),
@@ -74,7 +70,7 @@ func (p *matkulService) GetAllMatkul() (*[]dto.MatkulResponse, errs.Errs) {
 			KodeMK:   matkul.KodeMK,
 			Tipe:     matkul.Tipe,
 			Semester: matkul.Semester,
-			Rumpun:   rumpun.KodeRMK,
+			Rumpun:   matkul.Rumpun.KodeRMK,
 			SKS:      matkul.SKS,
 		}
 		matkulRespons = append(matkulRespons, matkulResponsData)
@@ -93,7 +89,7 @@ func (p *matkulService) DeleteMatkul(matkulID int) (string, errs.Errs) {
 }
 
 func (p *matkulService) UpdateMatkul(matkulID int, matkulData models.Matkul) (*models.Matkul, errs.Errs) {
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkulData.RumpunID)
+	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(int(matkulData.RumpunID))
 	if errRumpun != nil || rumpun.ID == 0 {
 		return nil, errRumpun
 	}
@@ -121,10 +117,6 @@ func (p *matkulService) GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.E
 	if err != nil {
 		return nil, err
 	}
-	rumpun, errRumpun := p.rumpunRepo.GetRumpunById(matkulData.RumpunID)
-	if errRumpun != nil {
-		return nil, errRumpun
-	}
 
 	matkulRespons := dto.MatkulResponse{
 		ID:       int(matkulData.ID),
@@ -132,7 +124,7 @@ func (p *matkulService) GetMatkulById(matkulID int) (*dto.MatkulResponse, errs.E
 		KodeMK:   matkulData.KodeMK,
 		Tipe:     matkulData.Tipe,
 		Semester: matkulData.Semester,
-		Rumpun:   rumpun.Nama,
+		Rumpun:   matkulData.Rumpun.KodeRMK,
 		SKS:      matkulData.SKS,
 	}
 

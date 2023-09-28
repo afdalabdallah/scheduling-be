@@ -31,8 +31,9 @@ func (p Preferensi) Value() (driver.Value, error) {
 type Dosen struct {
 	gorm.Model
 	Nama       string     `json:"nama"`
-	KodeDosen  string     `json:"kode_dosen"`
+	KodeDosen  string     `json:"kode_dosen" gorm:"unique"`
 	Preferensi Preferensi `json:"preferensi"`
-	RumpunID   int        `json:"rumpun_id"`
+	RumpunID   uint       `json:"rumpun_id" gorm:"constraint:OnDelete:SET NULL, OnUpdate:CASCADE"`
 	Load       int        `json:"load"`
+	Rumpun     Rumpun     `gorm:"foreignKey:RumpunID"`
 }
