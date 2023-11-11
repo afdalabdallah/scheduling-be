@@ -18,7 +18,7 @@ type perkuliahanService struct {
 }
 
 type PerkuliahanService interface {
-	CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
+	CreatePerkuliahan(PerkuliahanData []models.Perkuliahan) (*[]models.Perkuliahan, errs.Errs)
 	GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, errs.Errs)
 	DeletePerkuliahan(PerkuliahanID uint) (string, errs.Errs)
 	UpdatePerkuliahan(PerkuliahanID uint, PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs)
@@ -35,41 +35,48 @@ func NewPerkuliahanService(rumpunRepo rumpun_repository.RumpunRepository, matkul
 	}
 }
 
-func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData models.Perkuliahan) (*models.Perkuliahan, errs.Errs) {
-	matkul, errMatkul := p.matkulRepo.GetMatkulById(PerkuliahanData.MatkulID)
-	if errMatkul != nil {
-		return nil, errMatkul
-	}
-	dosen, errDosen := p.dosenRepo.GetDosenById(PerkuliahanData.DosenID)
-	if errDosen != nil {
-		return nil, errDosen
+func (p *perkuliahanService) CreatePerkuliahan(PerkuliahanData []models.Perkuliahan) (*[]models.Perkuliahan, errs.Errs) {
+	var perkuliahanCreateRespons []models.Perkuliahan
+
+	for _, data := range PerkuliahanData {
+
+		matkul, errMatkul := p.matkulRepo.GetMatkulById(data.MatkulID)
+		if errMatkul != nil {
+			return nil, errMatkul
+		}
+		dosen, errDosen := p.dosenRepo.GetDosenById(data.DosenID)
+		if errDosen != nil {
+			return nil, errDosen
+		}
+
+		Perkuliahan := models.Perkuliahan{
+			Sesi:     data.Sesi,
+			Kelas:    data.Kelas,
+			Ruangan:  data.Ruangan,
+			MatkulID: matkul.ID,
+			DosenID:  dosen.ID,
+			RumpunID: matkul.Rumpun.ID,
+		}
+		var dosenLoads int
+		dosenLoads = dosen.Load + matkul.SKS
+		var dosenNew models.Dosen
+
+		dosenNew.Nama = dosen.Nama
+		dosenNew.KodeDosen = dosen.KodeDosen
+		dosenNew.Preferensi = dosen.Preferensi
+		dosenNew.RumpunID = dosen.RumpunID
+		dosenNew.Load = dosenLoads
+
+		dosenUpdateLoad, err := p.dosenRepo.UpdateDosen(dosen.ID, dosenNew)
+		PerkuliahanCreated, err := p.perkuliahanRepo.CreatePerkuliahan(Perkuliahan)
+		if err != nil {
+			return nil, err
+		}
+		println(dosenUpdateLoad)
+		perkuliahanCreateRespons = append(perkuliahanCreateRespons, *PerkuliahanCreated)
 	}
 
-	Perkuliahan := models.Perkuliahan{
-		Sesi:     PerkuliahanData.Sesi,
-		Kelas:    PerkuliahanData.Kelas,
-		Ruangan:  PerkuliahanData.Ruangan,
-		MatkulID: matkul.ID,
-		DosenID:  dosen.ID,
-		RumpunID: matkul.Rumpun.ID,
-	}
-	var dosenLoads int
-	dosenLoads = dosen.Load + matkul.SKS
-	var dosenNew models.Dosen
-
-	dosenNew.Nama = dosen.Nama
-	dosenNew.KodeDosen = dosen.KodeDosen
-	dosenNew.Preferensi = dosen.Preferensi
-	dosenNew.RumpunID = dosen.RumpunID
-	dosenNew.Load = dosenLoads
-
-	dosenUpdateLoad, err := p.dosenRepo.UpdateDosen(dosen.ID, dosenNew)
-	PerkuliahanCreated, err := p.perkuliahanRepo.CreatePerkuliahan(Perkuliahan)
-	if err != nil {
-		return nil, err
-	}
-	println(dosenUpdateLoad)
-	return PerkuliahanCreated, nil
+	return &perkuliahanCreateRespons, nil
 }
 
 func (p *perkuliahanService) GetAllPerkuliahan() (*[]dto.PerkuliahanResponse, errs.Errs) {

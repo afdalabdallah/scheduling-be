@@ -29,7 +29,7 @@ func NewPerkuliahanController(PerkuliahanService services.PerkuliahanService) Pe
 }
 
 func (p *perkuliahanController) CreatePerkuliahan(c *gin.Context) {
-	var PerkuliahanData models.Perkuliahan
+	var PerkuliahanData []models.Perkuliahan
 	if err := c.ShouldBindJSON(&PerkuliahanData); err != nil {
 		bindErr := errs.NewBadRequestError(err.Error())
 

@@ -6,6 +6,7 @@ import (
 	"github.com/afdalabdallah/backend-web/repository/dosen_repository/dosen_pg"
 	"github.com/afdalabdallah/backend-web/repository/matkul_repository/matkul_pg"
 	"github.com/afdalabdallah/backend-web/repository/perkuliahan_repository/perkuliahan_pg"
+	"github.com/afdalabdallah/backend-web/repository/ruangan_repository/ruangan_pg"
 	"github.com/afdalabdallah/backend-web/repository/rumpun_repository/rumpun_pg"
 	"github.com/afdalabdallah/backend-web/services"
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,10 @@ func main() {
 	rumpunService := services.NewRumpunService(rumpunRepo)
 	rumpunController := controllers.NewRumpunController(rumpunService)
 
+	ruanganRepo := ruangan_pg.NewPGRuanganRepository(initializers.DB)
+	ruanganService := services.NewRuanganService(ruanganRepo)
+	ruanganController := controllers.NewRuanganController(ruanganService)
+
 	matkulRepo := matkul_pg.NewPGMatkulRepository(initializers.DB)
 	matkulService := services.NewMatkulService(matkulRepo, rumpunRepo)
 	matkulController := controllers.NewMatkulController(matkulService)
@@ -37,6 +42,16 @@ func main() {
 	route := gin.Default()
 
 	route.Use(CORSMiddleware())
+
+	ruanganRoute := route.Group("/ruangan")
+	{
+		ruanganRoute.POST("/", ruanganController.CreateRuangan)
+		ruanganRoute.GET("/", ruanganController.GetAllRuangan)
+		ruanganRoute.GET("/:ruanganID", ruanganController.GetRuanganById)
+		ruanganRoute.PUT("/:ruanganID", ruanganController.UpdateRuangan)
+		ruanganRoute.DELETE("/:ruanganID", ruanganController.DeleteRuangan)
+	}
+
 	rumpunRoute := route.Group("/rumpun")
 	{
 		rumpunRoute.POST("/", rumpunController.CreateRumpun)
