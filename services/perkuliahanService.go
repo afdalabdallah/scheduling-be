@@ -122,7 +122,13 @@ func (p *perkuliahanService) DeletePerkuliahan(PerkuliahanID uint) (string, errs
 	}
 
 	var dosenLoads int
-	dosenLoads = dosen.Load - matkul.SKS
+	
+	if(dosen.Load > 0){
+		dosenLoads = dosen.Load - matkul.SKS
+	}else{
+		dosenLoads = dosen.Load
+	}
+	
 	var dosenNew models.Dosen
 
 	dosenNew.Nama = dosen.Nama
