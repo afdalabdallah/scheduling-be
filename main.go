@@ -4,6 +4,7 @@ import (
 	"github.com/afdalabdallah/backend-web/controllers"
 	"github.com/afdalabdallah/backend-web/initializers"
 	"github.com/afdalabdallah/backend-web/repository/dosen_repository/dosen_pg"
+	"github.com/afdalabdallah/backend-web/repository/jadwal_repository/jadwal_pg"
 	"github.com/afdalabdallah/backend-web/repository/matkul_repository/matkul_pg"
 	"github.com/afdalabdallah/backend-web/repository/perkuliahan_repository/perkuliahan_pg"
 	"github.com/afdalabdallah/backend-web/repository/ruangan_repository/ruangan_pg"
@@ -39,9 +40,22 @@ func main() {
 	perkuliahanService := services.NewPerkuliahanService(rumpunRepo, matkulRepo, dosenRepo, perkuliahanRepo)
 	perkuliahanController := controllers.NewPerkuliahanController(perkuliahanService)
 
+	jadwalRepo := jadwal_pg.NewPGJadwalRepository(initializers.DB)
+	jadwalService := services.NewJadwalService(jadwalRepo)
+	jadwalController := controllers.NewJadwalController(jadwalService)
+
 	route := gin.Default()
 
 	route.Use(CORSMiddleware())
+
+	jadwalRoute := route.Group("/jadwal")
+	{
+		jadwalRoute.POST("/", jadwalController.CreateJadwal)
+		jadwalRoute.GET("/", jadwalController.GetAllJadwal)
+		jadwalRoute.GET("/:jadwalID", jadwalController.GetJadwalById)
+		jadwalRoute.PUT("/:jadwalID", jadwalController.UpdateJadwal)
+		jadwalRoute.DELETE("/:jadwalID", jadwalController.DeleteJadwal)
+	}
 
 	ruanganRoute := route.Group("/ruangan")
 	{

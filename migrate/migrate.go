@@ -18,5 +18,6 @@ func main() {
 	initializers.DB.AutoMigrate(&models.Dosen{})
 	initializers.DB.AutoMigrate(&models.Perkuliahan{})
 	initializers.DB.AutoMigrate(&models.Ruangan{})
+	initializers.DB.AutoMigrate(&models.Jadwal{})
 	log.Println("Database migrated")
 }
