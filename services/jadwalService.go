@@ -91,7 +91,6 @@ func (p *jadwalService) GetJadwalById(jadwalID uint) (*models.Jadwal, errs.Errs)
 	}
 	var jadwalResponse models.Jadwal
 	jadwalResponse = models.Jadwal{
-		
 		Data:               jadwalData.Data,
 		Fitness:            jadwalData.Fitness,
 		ViolatedConstraint: jadwalData.ViolatedConstraint,
