@@ -32,6 +32,8 @@ func (p *jadwalService) CreateJadwal(jadwalData models.Jadwal) (*models.Jadwal, 
 		Fitness:            jadwalData.Fitness,
 		ViolatedConstraint: jadwalData.ViolatedConstraint,
 		Skpb:               jadwalData.Skpb,
+		UnwantedSesi:	jadwalData.UnwantedSesi,
+		ListRuangan: jadwalData.ListRuangan,
 	}
 	jadwalCreated, err := p.jadwalRepo.CreateJadwal(jadwal)
 	if err != nil {
@@ -68,6 +70,8 @@ func (p *jadwalService) UpdateJadwal(jadwalID uint, jadwalData models.Jadwal) (*
 		Fitness:            jadwalData.Fitness,
 		ViolatedConstraint: jadwalData.ViolatedConstraint,
 		Skpb:               jadwalData.Skpb,
+		UnwantedSesi:	jadwalData.UnwantedSesi,
+		ListRuangan: jadwalData.ListRuangan,
 	}
 
 	jadwalUpdated, err := p.jadwalRepo.UpdateJadwal(jadwalID, jadwal)
@@ -87,10 +91,14 @@ func (p *jadwalService) GetJadwalById(jadwalID uint) (*models.Jadwal, errs.Errs)
 	}
 	var jadwalResponse models.Jadwal
 	jadwalResponse = models.Jadwal{
+		
 		Data:               jadwalData.Data,
 		Fitness:            jadwalData.Fitness,
 		ViolatedConstraint: jadwalData.ViolatedConstraint,
 		Skpb:               jadwalData.Skpb,
+		UnwantedSesi:	jadwalData.UnwantedSesi,
+		ListRuangan: jadwalData.ListRuangan,
+		
 	}
 
 	return &jadwalResponse, nil

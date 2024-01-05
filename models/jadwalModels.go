@@ -24,6 +24,20 @@ func (js JSONSlice) Value() (driver.Value, error) {
 	return json.Marshal(js)
 }
 
+type JSONArrayString []string
+func (js *JSONArrayString) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	if data, ok := value.([]byte); ok {
+		return json.Unmarshal(data, js)
+	}
+	return errors.New("failed to unmarshal JSONArrayString")
+}
+
+func (js JSONArrayString) Value() (driver.Value, error) {
+	return json.Marshal(js)
+}
 // type Data struct {
 // 	Dosen      string `json:"dosen"`
 // 	Kelas      string `json:"kelas"`
@@ -34,16 +48,7 @@ func (js JSONSlice) Value() (driver.Value, error) {
 // 	Tipe       string `json:"tipe"`
 // }
 
-// type SKPB struct {
-// 	Dosen      string   `json:"kode_dosen"`
-// 	Kelas      string   `json:"kelas"`
-// 	MataKuliah string   `json:"kode_mk"`
-// 	Preferensi []string `json:"preferensi"`
-// 	Rumpun     string   `json:"rumpun"`
-// 	Ruangan    string   `json:"ruangan"`
-// 	Sesi       string   `json:"sesi"`
-// 	Tipe       string   `json:"tipe"`
-// }
+
 
 type Constraint struct {
 	FirstConstraint  int `json:"first_constraint"`
@@ -104,4 +109,6 @@ type Jadwal struct {
 	Fitness            float64    `gorm:"type:float" json:"fitness"`
 	ViolatedConstraint Constraint `gorm:"type:json" json:"violated_constraint"`
 	Skpb               JSONSlice  `json:"skpb" gorm:"type:json"`
+	UnwantedSesi	JSONArrayString `json:"unwanted_sesi" gorm:"type:json"`
+	ListRuangan	JSONArrayString	`json:"list_ruangan" gorm:"type:json"`
 }

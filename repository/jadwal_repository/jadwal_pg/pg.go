@@ -68,6 +68,8 @@ func (p *jadwalRepository) UpdateJadwal(jadwalID uint, jadwalData models.Jadwal)
 	jadwalUpdate.Fitness = jadwalData.Fitness
 	jadwalUpdate.ViolatedConstraint = jadwalData.ViolatedConstraint
 	jadwalUpdate.Skpb = jadwalData.Skpb
+	jadwalUpdate.ListRuangan = jadwalData.ListRuangan
+	jadwalUpdate.UnwantedSesi = jadwalData.UnwantedSesi
 
 	result = p.db.Save(&jadwalUpdate)
 
@@ -81,7 +83,7 @@ func (p *jadwalRepository) UpdateJadwal(jadwalID uint, jadwalData models.Jadwal)
 func (p *jadwalRepository) GetJadwalById(jadwalID uint) (*models.Jadwal, errs.Errs) {
 	var jadwalData models.Jadwal
 
-	result := p.db.Preload("Rumpun").First(&jadwalData, jadwalID)
+	result := p.db.First(&jadwalData, jadwalID)
 
 	err := result.Error
 	if err != nil {
