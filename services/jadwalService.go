@@ -89,16 +89,16 @@ func (p *jadwalService) GetJadwalById(jadwalID uint) (*models.Jadwal, errs.Errs)
 	if err != nil {
 		return nil, err
 	}
-	var jadwalResponse models.Jadwal
-	jadwalResponse = models.Jadwal{
-		Data:               jadwalData.Data,
-		Fitness:            jadwalData.Fitness,
-		ViolatedConstraint: jadwalData.ViolatedConstraint,
-		Skpb:               jadwalData.Skpb,
-		UnwantedSesi:	jadwalData.UnwantedSesi,
-		ListRuangan: jadwalData.ListRuangan,
+	// var jadwalResponse models.Jadwal
+	// jadwalResponse = models.Jadwal{
+	// 	Data:               jadwalData.Data,
+	// 	Fitness:            jadwalData.Fitness,
+	// 	ViolatedConstraint: jadwalData.ViolatedConstraint,
+	// 	Skpb:               jadwalData.Skpb,
+	// 	UnwantedSesi:	jadwalData.UnwantedSesi,
+	// 	ListRuangan: jadwalData.ListRuangan,
 		
-	}
+	// }
 
-	return &jadwalResponse, nil
+	return jadwalData, nil
 }
